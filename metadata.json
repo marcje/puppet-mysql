@@ -1,0 +1,26 @@
+{
+  "name": "marcje-mysql",
+  "version": "1.0.0",
+  "author": "Marc ter Bogt",
+  "summary": "Installs, configures and manages the MySQL server.",
+  "license": "Apache-2.0",
+  "source": "https://github.com/marcje/puppet-mysql",
+  "project_page": "https://github.com/marcje/puppet-mysql",
+  "issues_url": "https://github.com/marcje/puppet-mysql/issues",
+  "dependencies": [{"name": "puppetlabs/stdlib", "version_requirement": ">4.25.0"}],
+  "operatingsystem_support": [
+    {
+      "operatingsystem": "Ubuntu",
+      "operatingsystemrelease": [
+        "16.04",
+		"18.04"
+      ]
+    }
+  ],
+  "requirements": [
+    {
+      "name": "puppet",
+      "version_requirement": ">= 4.10.0"
+    }
+  ]
+}

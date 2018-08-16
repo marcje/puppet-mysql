@@ -1,0 +1,117 @@
+# Managed by Puppet
+
+# Basic settings
+[mysqld_safe]
+socket = /var/run/mysqld/mysqld.sock
+nice   = 0
+
+[mysqld]
+user                   = mysql
+pid-file               = /var/run/mysqld/mysqld.pid
+socket                 = /var/run/mysqld/mysqld.sock
+port                   = <%=$mysql::port%>
+bind-address           = <%=$mysql::bind_address%>
+default-storage-engine = <%=$mysql::default_storage_engine%>
+basedir                = /usr
+datadir                = /var/lib/mysql
+tmpdir                 = /tmp
+lc-messages-dir        = /usr/share/mysql
+skip-external-locking
+
+<% if $mysql::skip_networking { -%>
+skip-networking
+<% } -%>
+
+# Generic fine tuning
+max_connections    = <%=$mysql::max_connections%>
+max_connect_errors = <%=$mysql::max_connect_errors%>
+max_allowed_packet = <%=$mysql::max_allowed_packet%>
+thread_stack       = <%=$mysql::thread_stack%>
+thread_cache_size  = <%=$mysql::thread_cache_size%>
+table_open_cache   = <%=$mysql::table_cache%>
+
+<% if $mysql::explicit_timestamp_defaults { -%>
+explicit_defaults_for_timestamp = 1
+<% } else { -%>
+explicit_defaults_for_timestamp = 0
+<% } -%>
+
+<% if $mysql::local_infile { -%>
+local-infile = 1
+<% } else { -%>
+local-infile = 0
+<% } -%>
+
+# MyISAM specific options
+key_buffer_size        = <%=$mysql::key_buffer_size%>
+myisam-recover-options = <%=$mysql::myisam_recover_options%>
+
+# InnoDB specific options
+innodb_buffer_pool_size      = <%=$mysql::innodb_buffer_pool_size%>
+innodb_buffer_pool_instances = <%=$mysql::innodb_buffer_pool_instances%>
+innodb_log_file_size         = <%=$mysql::innodb_log_file_size%>
+innodb_log_buffer_size       = <%=$mysql::innodb_log_buffer_size%>
+
+<% if $mysql::innodb_file_per_table { -%>
+innodb_file_per_table = 1
+<% } else { -%>
+innodb_file_per_table = 0
+<% } -%>
+
+<% if $mysql::innodb_stats_on_metadata { -%>
+innodb_stats_on_metadata = 1
+<% } else { -%>
+innodb_stats_on_metadata = 0
+<% } -%>
+
+<% if $mysql::innodb_large_prefix { -%>
+innodb_large_prefix = 1
+<% } else { -%>
+innodb_large_prefix = 0
+<% } -%>
+
+# Query caching options
+query_cache_limit = <%=$mysql::query_cache_limit%>
+query_cache_size  = <%=$mysql::query_cache_size%>
+
+<% if $mysql::enable_general_log { -%>
+# Logging options
+general_log_file = /var/log/mysql/mysql.log
+general_log      = 1
+<% } -%>
+
+<% if $mysql::enable_error_log { -%>
+log_error = /var/log/mysql/error.log
+<% } -%>
+
+<% if $mysql::enable_slow_log { -%>
+slow_query_log  = 1
+long_query_time = <%=$mysql::long_query_time%>
+log-queries-not-using-indexes
+<% } -%>
+
+<% if($mysql::server_type == 'master' or $mysql::server_type == 'slave') { -%>
+# MySQL replication options
+server-id        = <%=$mysql::server_id %>
+expire_logs_days = <%=$mysql::log_expiration%>
+max_binlog_size  = <%=$mysql::binlog_size%>
+<% } -%>
+
+<% if $mysql::server_type == 'master' { -%>
+# MySQL Master replication specific options
+log_bin      = <%=$mysql::log_bin %>
+binlog_do_db = <%=$mysql::replicate_db.join(', ') %>
+<% } -%>
+<% if $mysql::server_type == 'slave' { -%>
+# MySQL slave replication specific options
+relay-log       = slave-relay-bin
+relay-log-index = slave-relay-bin.index
+replicate-do-db = <%=$mysql::replicate_db.join(', ') %>
+<% } -%>
+
+<% if $mysql::enable_ssl { -%>
+# SSL options
+ssl-ca   = <%=$mysql::ssl_ca_cert %>
+ssl-cert = <%=$mysql::ssl_cert %>
+ssl-key  = <%=$mysql::ssl_key %>
+<% } -%>
